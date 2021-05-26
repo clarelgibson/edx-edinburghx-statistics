@@ -1,0 +1,69 @@
+---
+title: "Module 1 - Introducing Data"
+author: "Clare Gibson"
+date: "2021-05-26"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Introduction
+This module looks at the techniques for describing, presenting and summarising data. Throughout this module we will make use of a data set on primary school performance in Surrey and Hampshire to illustrate some of the key concepts.
+
+We will make use of the following libraries:
+```{r libraries, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(janitor)
+```
+
+
+## Loading the example data
+Let's read in the data set we will use for this module and look at the first 6 rows of data. This data set describes Key Stage 2 performance for primary schools in Surrey for the 2018-2019 academic year. It was published by the UK government.
+```{r read, message=FALSE, warning=FALSE}
+performance <- read_csv("data-in/2018-2019_936_ks2final.csv") %>% 
+  clean_names()
+
+head(performance)
+```
+
+There are over 300 columns of data in this file. For the purposes of this module we can condense this down to a more manageable number of columns.
+```{r select}
+performance <- performance %>% 
+  select(urn,
+         schname,
+         nftype,
+         reldenom,
+         totpups,
+         matprog,
+         writprog,
+         readprog)
+
+head(performance)
+```
+
+Looking at the data types that R has determined, we will need to make some adjustments.
+```{r data types, message=FALSE, warning=FALSE}
+performance <- performance %>% 
+  mutate(across(totpups:readprog, as.numeric))
+
+head(performance)
+```
+
+# What is data?
+Data is information and comes in different types:
+
+* **Qualitative** data describes qualities. It is descriptive. There are two types of qualitative data:
+    + **Ordinal** tells you about ordering (e.g. it ranks 8 out of 10)
+    + **Nominal** simply describes or categorises something (e.g. it's pink)
+* **Quantitative** data talks about quantities or numbers (e.g. 15cm high). There are two types of quantitative data:
+    + **Discrete** can only take a set of possible values (e.g. £1.90)
+    + **Continuous** can take on any value in a range (e.g. 12, 12.31. 12.34562)
+
+In our example data set we have the following fields and data types.
+
+Column Name    |Data Type            |Description
+---------------|---------------------|-----------------
+urn            |Qualitative Nominal  |Unique Reference Number of the school
+schname        |Qualitative Nominal  |School name
