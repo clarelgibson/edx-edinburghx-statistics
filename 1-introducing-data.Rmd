@@ -9,7 +9,7 @@ output:
     number_sections: true
     toc_float: true
     theme: cosmo
-    code_folding: show
+    code_folding: hide
 ---
 
 ```{r setup, include=FALSE}
@@ -19,12 +19,11 @@ knitr::opts_chunk$set(echo = TRUE)
 # Introduction
 This module looks at the techniques for describing, presenting and summarising data. Throughout this module we will make use of a data set on primary school performance in Surrey and Hampshire to illustrate some of the key concepts.
 
-We will make use of the following libraries:
+We will make use of the `tidyverse` and `janitor` packages:
 ```{r libraries, message=FALSE, warning=FALSE}
 library(tidyverse)
 library(janitor)
 ```
-
 
 ## Loading the example data
 Let's read in the data set we will use for this module and look at the first 6 rows of data. This data set describes Key Stage 2 performance for primary schools in Surrey for the 2018-2019 academic year. It was published by the UK government.
@@ -50,7 +49,7 @@ performance <- performance %>%
 head(performance)
 ```
 
-Looking at the data types that R has determined, we will need to make some adjustments.
+Looking at the data types that R has determined, some columns have been read in as character types when they should be numeric. We can fix this for the `totpups`, `matprog`, `writprog` and `readprog` columns.
 ```{r data types, message=FALSE, warning=FALSE}
 performance <- performance %>% 
   mutate(across(totpups:readprog, as.numeric))
@@ -68,7 +67,10 @@ Data is information and comes in different types:
     + **Discrete** can only take a set of possible values (e.g. £1.90)
     + **Continuous** can take on any value in a range (e.g. 12, 12.31. 12.34562)
 
-In our example data set we have the following fields and data types.
+Usually we are interested in data that comes from recording some quantity or quality of interest. We may know in advance what the possible values of the data could be, but until we collect the data we do not know the actual values. For example, we know that if we roll a dice we will get a number between 1 and 6, but we don't know which one until we roll it. We might know that the speed of a moving car at a particular location is between 0 and 100 miles per hour, but we don't know the exact speed until we measure it. When we want to measure a quantity or quality and it can take on a range of values like this, before we observe the actual value we refer to it as a **random variable**, or variable for short.
+
+## What types of data can you find?
+In our example data set we have the following fields and data types:
 
 Column Name     Data Type               Description
 --------------- ----------------------  -----------------
@@ -82,3 +84,44 @@ writprog        Quantitative Continuous Writing progress measure
 readprog        Quantitative Continuous Reading progress measure
 
 Table: Fields and data types in the example data set
+
+# What is statistics?
+Statistics is a branch of maths that deals with analysing data and interpreting the results. Scientific research is often advanced by posing scientific questions and then answering these, and statistics answers those questions using data. For example, if you are looking at primary school performance, you might want to know if schools with a religious denomination achieve better maths results than those with no religious denomination. To answer this, you might first collect some data. For example, you could take a random sample of 100 schools; 50 of those have no religious denomination and 50 schools have a religious denomination. Then you would collect data on the maths performance of each school and use that data to determine whether having a religious denomination improves school performance in maths.
+
+In order to answer the question, you would first look at the data, which might look something like this:
+
+```{r maths performance}
+# We'll create a new df called test_reldenom to hold our sample data for
+# religious denomination and maths performance.
+test_reldenom <- performance %>% 
+  # First we'll select only the columns we need
+  select(urn, reldenom, matprog) %>% 
+  # Next we'll filter out any NA values in matprog
+  filter(!is.na(matprog)) %>% 
+  # Now let's create a new binary variable which determines if the school has
+  # a religious denomination or not
+  mutate(is_religious = if_else(
+    reldenom %in% c("None", "Does not apply"),
+    FALSE,
+    TRUE)) %>% 
+  # Now we'll subset the df so that we have two equal groups of 50 schools,
+  # comparing religious against non-religious schools
+  group_by(is_religious) %>% 
+  slice_sample(n = 50) %>% 
+  ungroup() %>% 
+  # We can remove the reldenom column and re-order the remaining columns
+  select(urn, is_religious, matprog)
+
+test_reldenom
+```
+
+The table shows 100 schools, and the corresponding maths progress score for each. You can then divide them into 2 groups and create a chart with one plot for the group with a religious denomination and one plot for the group without a religious denomination, as shown below.
+```{r boxplot}
+ggplot(test_reldenom, aes(is_religious, matprog)) +
+  geom_boxplot()
+```
+
+Looking at this data might tell us that having a religious denomination has possibly increased the maths progress score, but we would need to do a formal statistical analysis, which will take into account the different amounts of variability, to work this out for certain.
+
+## The statistics cycle
+Often we start out with an initial question that we want to answer with data. We collect the data and analyse it to answer that question, but in doing so that uncovers extra questions that we may want to go further and investigate. This process of analysis, refinement and reanalysis is generally how scientific research develops. We call this diagram the statistics cycle as shown below.
