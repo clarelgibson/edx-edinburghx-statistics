@@ -1,8 +1,15 @@
 ---
 title: "Module 1 - Introducing Data"
+subtitle: "edX EdinburghX Statistics"
 author: "Clare Gibson"
-date: "2021-05-26"
-output: github_document
+date: "`r Sys.Date()`"
+output: 
+  html_document:
+    toc: true
+    number_sections: true
+    toc_float: true
+    theme: cosmo
+    code_folding: show
 ---
 
 ```{r setup, include=FALSE}
@@ -63,7 +70,15 @@ Data is information and comes in different types:
 
 In our example data set we have the following fields and data types.
 
-Column Name    |Data Type            |Description
----------------|---------------------|-----------------
-urn            |Qualitative Nominal  |Unique Reference Number of the school
-schname        |Qualitative Nominal  |School name
+Column Name     Data Type               Description
+--------------- ----------------------  -----------------
+urn             Qualitative Nominal     Unique Reference Number of the school
+schname         Qualitative Nominal     School name
+nftype          Qualitative Nominal     School type
+reldenom        Qualitative Nominal     Religious denomination
+totpups         Quantitative Discrete   Total number of pupils
+matprog         Quantitative Continuous Maths progress measure
+writprog        Quantitative Continuous Writing progress measure
+readprog        Quantitative Continuous Reading progress measure
+
+Table: Fields and data types in the example data set
