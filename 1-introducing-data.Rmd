@@ -23,6 +23,7 @@ We will make use of the `tidyverse` and `janitor` packages:
 ```{r libraries, message=FALSE, warning=FALSE}
 library(tidyverse)
 library(janitor)
+library(knitr)
 ```
 
 ## Loading the example data
@@ -34,9 +35,10 @@ performance <- read_csv("data-in/2018-2019_936_ks2final.csv") %>%
 head(performance)
 ```
 
-There are over 300 columns of data in this file. For the purposes of this module we can condense this down to a more manageable number of columns.
+There are over 300 columns of data in this file. For the purposes of this module we can condense this down to a more manageable number of columns. We can also filter out any records that are not related to an individual school (i.e. records containing subtotals or totals).
 ```{r select}
 performance <- performance %>% 
+  filter(rectype == 1) %>% 
   select(urn,
          schname,
          nftype,
@@ -57,7 +59,7 @@ performance <- performance %>%
 head(performance)
 ```
 
-# What is data?
+## What is data?
 Data is information and comes in different types:
 
 * **Qualitative** data describes qualities. It is descriptive. There are two types of qualitative data:
@@ -69,7 +71,7 @@ Data is information and comes in different types:
 
 Usually we are interested in data that comes from recording some quantity or quality of interest. We may know in advance what the possible values of the data could be, but until we collect the data we do not know the actual values. For example, we know that if we roll a dice we will get a number between 1 and 6, but we don't know which one until we roll it. We might know that the speed of a moving car at a particular location is between 0 and 100 miles per hour, but we don't know the exact speed until we measure it. When we want to measure a quantity or quality and it can take on a range of values like this, before we observe the actual value we refer to it as a **random variable**, or variable for short.
 
-## What types of data can you find?
+### What types of data can you find?
 In our example data set we have the following fields and data types:
 
 Column Name     Data Type               Description
@@ -85,7 +87,7 @@ readprog        Quantitative Continuous Reading progress measure
 
 Table: Fields and data types in the example data set
 
-# What is statistics?
+## What is statistics?
 Statistics is a branch of maths that deals with analysing data and interpreting the results. Scientific research is often advanced by posing scientific questions and then answering these, and statistics answers those questions using data. For example, if you are looking at primary school performance, you might want to know if schools with a religious denomination achieve better maths results than those with no religious denomination. To answer this, you might first collect some data. For example, you could take a random sample of 100 schools; 50 of those have no religious denomination and 50 schools have a religious denomination. Then you would collect data on the maths performance of each school and use that data to determine whether having a religious denomination improves school performance in maths.
 
 In order to answer the question, you would first look at the data, which might look something like this:
@@ -112,7 +114,7 @@ test_reldenom <- performance %>%
   # We can remove the reldenom column and re-order the remaining columns
   select(urn, is_religious, matprog)
 
-test_reldenom
+head(test_reldenom)
 ```
 
 The table shows 100 schools, and the corresponding maths progress score for each. You can then divide them into 2 groups and create a chart with one plot for the group with a religious denomination and one plot for the group without a religious denomination, as shown below.
@@ -123,5 +125,77 @@ ggplot(test_reldenom, aes(is_religious, matprog)) +
 
 Looking at this data might tell us that having a religious denomination has possibly increased the maths progress score, but we would need to do a formal statistical analysis, which will take into account the different amounts of variability, to work this out for certain.
 
-## The statistics cycle
+### The statistics cycle
 Often we start out with an initial question that we want to answer with data. We collect the data and analyse it to answer that question, but in doing so that uncovers extra questions that we may want to go further and investigate. This process of analysis, refinement and reanalysis is generally how scientific research develops. We call this diagram the statistics cycle as shown below.
+
+![](images/1-01.png)
+
+It is a useful tool for designing, conducting and interpreting a statistical experiment. We typically start with a question that we wish to answer. Given the question we collect relevant data that allows us to investigate this question. Using the data we conduct an appropriate statistical analysis and interpret the results accordingly. Given our updated understanding of the world from the results obtained we may pose a further follow-up or in-depth question that we wish to investigate, and so on...
+
+## Designing an experiment
+The climate of the Earth has changed throughout history. There is evidence to show that we are currently in a state of rapid warming, and there is a lot of debate about whether or not this will continue, and what impact it might have on our planet. Scientific studies looking into global warming make use of statistics in order to try to answer these difficult questions. A huge amount of data is needed to say anything concrete about long-term weather patterns, but closer to home we can investigate the temperature of our local area and how this has changed over the past few years.
+
+### Designing a weather study
+First, we need to design a study that will allow us to answer our question. We begin by defining the specific question that we are interested in, before looking at what data we might collect, and how we might record it.
+
+We are interested in whether or not there has been an overall change in temperature over the past three years, and if so what this change has been.
+
+Here is how we might start to design our experiment:
+
+* **Question to pose:** How has the monthly average daily maximum temperature changed over the last three years?
+* **How to collect the data:** Obtain a list of the monthly average maximum temperatures over the past three years.
+* **How to record the data:** As a number, in degrees Celsius, rounded to the nearest degree.
+
+### Collecting weather data
+Now that we have designed a study, we are ready to collect data. Here are the monthly average maximum temperatures for Edinburgh over the three years from January 2014 to December 2016 (source: [Weather Underground](www.wunderground.com)).
+```{r Edinburgh weather}
+year <- c(rep(2012, 12), rep(2013, 12), rep(2014, 12))
+month <- rep(c("Jan", "Feb", "Mar", "Apr",
+               "May", "Jun", "Jul", "Aug",
+               "Sep", "Oct", "Nov", "Dec"), 3)
+temp <- c(7, 8, 10, 12, 15, 18, 21, 18, 17, 14, 10, 7,
+          7, 7, 9, 13, 13, 17, 17, 19, 17, 14, 11, 10,
+          7, 7, 9, 10, 15, 16, 19, 18, 18, 13, 8, 9)
+
+edinburgh <- tibble(year, month, temp) %>% 
+  mutate(year = as.character(year),
+         month = factor(month, levels = month.abb))
+
+kable(edinburgh %>% 
+        pivot_wider(names_from = month, values_from = temp))
+```
+
+### What does the data tell us?
+It is hard to distinguish any firm patterns just by looking at this table of data. We can see that May to September is typically warmer than October to April. We can’t really tell if the trend by year is increasing or decreasing temperatures.
+
+# Visualising data
+We just looked at weather data in the form of a table. We found that it was not simple to extract useful information from the data in this form, even though it was a relatively small data set. Modern data science often involves analysing data sets with thousands, if not millions of pieces of data in them. This section focuses on ways of visualising data in order to make it easier to analyse and interpret. This idea dates back to the work of William Playfair in the late 1700s.
+
+In 1786, the Scottish engineer and economist William Playfair (1759-1823) published a book of economical data called The Commercial and Political Atlas, in which the tables of data were also presented in the form of line graphs. Today, the line graph is still largely the favoured way of presenting financial data over time.
+
+The Financial Times Stock Exchange 100 Index (FTSE 100) gives a measure of the value of the UK's 100 largest qualifying companies. It is calculated and published every 15 seconds between 08:00 and 16:30, Monday to Friday, giving rise to a wealth of financial data. The line graph below shows the value of the FTSE 100 at the end of each trading day over September 2016.
+
+![](images/1-02.png)
+
+The graph has a horizontal scale showing the dates in September, and a vertical scale showing a range of FTSE 100 values. Each dot on the graph represents one piece of data - the value of the FTSE 100 at the end of a given working day. Reading vertically downwards off the horizontal scale tells you the date, while reading horizontally to the left off the vertical scale tells you the value of the FTSE 100 at the end of that working day. The dot furthest to the left, for example, tells you that the value of the FTSE 100 at the end of the 1st September was just less than 6750. The dots have been joined by a line to help provide a visualisation of how the FTSE 100 value has changed, producing the line graph.
+
+## Line graphs
+**Line graphs** can be used whenever we want to show how a variable changes over time. The graph below shows a line graph of three data sets showing the monthly average daily maximum temperature of Edinburgh in the years 2012, 2013 and 2014.
+```{r line chart}
+ggplot(data = edinburgh) +
+  geom_line(mapping = aes(x = month, y = temp, group = year, color = year))
+```
+
+## Bar charts
+Playfair's *Statistical Breviary*, published in 1801, used entirely different data visualisation methods to the Commercial and Political Atlas. One of these is the **bar chart**, which Playfair used to show and compare the populations and revenues of different countries. The bar chart is one of the most commonly seen types of graph or chart today, and is a useful way of showing and comparing amounts or values across different categories.
+
+We have data on school types in Surrey. The bar chart below shows the total number of schools by school type.
+```{r bar chart, message=FALSE, warning=FALSE}
+ggplot(data = performance) +
+  geom_bar(mapping = aes(x = reorder(nftype, -totpups), y = totpups),
+           stat = "identity",
+           na.rm = TRUE) +
+  labs(x = "Type of school",
+       y = "Total pupils")
+```
+
