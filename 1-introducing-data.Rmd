@@ -9,38 +9,50 @@ output:
     number_sections: true
     toc_float: true
     theme: cosmo
-    code_folding: hide
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+# Load knitr package
+library(knitr)
+
+# Knitr Options
+opts_chunk$set(
+	echo = TRUE,
+	message = FALSE,
+	warning = FALSE,
+	fig.align = 'center'
+)
 ```
 
 # Introduction
-In this series of notes, we will learn about some of the fundamental concepts in statistics. We will demonstrate the application of these concepts using the R programming language. The content of this series is largely taken from the edX course on Statistics: Unlocking the World of Data, which is offered by EdinburghX.
+In this series of notes, we will learn about some of the fundamental concepts in [statistics](https://en.wikipedia.org/wiki/Statistics). We will demonstrate the application of these concepts using the [R programming language](https://www.r-project.org/). The content of this series is largely taken from the [edX](https://www.edx.org/) course on [Statistics: Unlocking the World of Data](https://www.edx.org/course/statistics-unlocking-the-world-of-data?index=product&queryID=c17e40df5021902034c2eb26d7693caa&position=9), which is offered by [EdinburghX](https://www.edx.org/school/edinburghx).
 
 Module 1 looks at the techniques for describing, presenting and summarising data. Throughout this module we will make use of two data sets: the `performance` data set shows primary school performance in Surrey and Hampshire and the `offers` data set shows school admissions offer data by local authority in England.
 
-To get started we will need to load the `tidyverse` and `janitor` packages. I am also loading the `knitr` package to help with the rendering of this notebook document.
-```{r libraries, message=FALSE, warning=FALSE}
+To get started we will need to load the `tidyverse` and `janitor` packages.
+```{r packages}
+# Load packages
 library(tidyverse)
 library(janitor)
-library(knitr)
 ```
 
 ## Loading the example data
 Let's read in the two data sets we will use for this module and look at the first 6 rows of data in each. The `performance` data set describes Key Stage 2 performance for primary schools in Surrey for the 2018-2019 academic year. It was published by the UK government.
-```{r read-perf, message=FALSE, warning=FALSE}
+```{r read-perf}
+# Load the performance data
 load("data-in/performance.rda")
 
-head(performance)
+# Glimpse the dataframe
+glimpse(performance)
 ```
 
 The `offers` data set shows school admissions offers by local authority in England for all academic years from 2014-2015 to 2020-2021. It was also published by the UK government.
-```{r read-offr, message=FALSE, warning=FALSE}
+```{r read-offr}
+# Load in the offers data
 load("data-in/offers.rda")
 
-head(offers)
+# Glimpse the dataframe
+glimpse(offers)
 ```
 
 ## What is data?
