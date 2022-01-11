@@ -42,8 +42,12 @@ Let's read in the two data sets we will use for this module and look at the firs
 # Load the performance data
 load("data-in/performance.rda")
 
-# Glimpse the dataframe
-glimpse(performance)
+# Preview the dataframe
+performance %>% 
+  head() %>% 
+  kable(digits = 2,
+        align = "l",
+        caption = "First 6 rows of the performance dataset")
 ```
 
 The `offers` data set shows school admissions offers by local authority in England for all academic years from 2014-2015 to 2020-2021. It was also published by the UK government.
@@ -51,8 +55,12 @@ The `offers` data set shows school admissions offers by local authority in Engla
 # Load in the offers data
 load("data-in/offers.rda")
 
-# Glimpse the dataframe
-glimpse(offers)
+# Preview the dataframe
+offers %>% 
+  head() %>% 
+  kable(digits = 2,
+        align = "l",
+        caption = "First 6 rows of the offers dataset")
 ```
 
 ## What is data?
@@ -89,62 +97,49 @@ matprog         Quantitative Continuous Maths progress measure
 
 Table: Fields and data types in the `performance` data set
 
-Column Name           Data Type               Description
----------------       ----------------------  -----------------
-academic_year         Qualitative Nominal     Academic year
-lea                   Qualitative Nominal     Unique code of the Local Education Authority
-la_name               Qualitative Nominal     Local authority name
-education_phase       Qualitative Nominal     Phase of education
-nc_year_admission     Qualitative Nominal     National curriculum year of admission
-admission_numbers     Quantitative Discrete   Number of places offered
-applications_received Quantitative Discrete   Number of applications received
-online_applications   Quantitative Discrete   Number of online applications
-online_apps_percent   Quantitative Continuous Percent of online applications
-
-Table: Fields and data types in the `offers` data set
-
 ## What is statistics?
-Statistics is a branch of maths that deals with analysing data and interpreting the results. Scientific research is often advanced by posing scientific questions and then answering these, and statistics answers those questions using data. For example, if you are looking at primary school performance, you might want to know if schools with a religious character achieve better maths results than those with no religious character. To answer this, you might first collect some data. For example, you could take a random sample of 100 schools; 50 of those have no religious character and 50 schools have a religious character. Then you would collect data on the maths performance of each school and use that data to determine whether having a religious character improves school performance in maths.
+Statistics is a branch of maths that deals with **analysing data and interpreting the results**. Scientific research is often advanced by posing scientific questions and then answering these, and statistics answers those questions using data. For example, if you are looking at primary school performance, you might want to know if schools with a religious character achieve better maths results than those with no religious character. To answer this, you might first collect some data. For example, you could take a random sample of 100 schools; 50 of those have no religious character and 50 schools have a religious character. Then you would collect data on the maths performance of each school and use that data to determine whether having a religious character improves school performance in maths.
 
 In order to answer the question, you would first look at the data, which might look something like this:
 
 ```{r perf-math}
-# We'll create a new df called test_relchar to hold our sample data for
-# religious character and maths performance.
-test_reldenom <- performance %>% 
-  # First we'll filter out any NA values in matprog
-  filter(!is.na(matprog)) %>% 
-  # Let's also filter to include only the most recent academic year
-  filter(academic_year == "2018-2019") %>% 
-  # Next we'll select only the columns we need
-  select(urn, relchar, matprog) %>% 
-  # Now let's create a new binary variable which determines if the school has
-  # a religious character or not
-  mutate(is_religious = if_else(
+# We'll create a new df called test_relchar to hold our sample data
+# for religious character and maths performance.
+test_relchar <- performance %>% 
+  filter(!is.na(matprog)) %>%                 # remove NAs
+  filter(academic_year == "2018-2019") %>%    # most recent year
+  select(urn, relchar, matprog) %>%           # required cols
+  mutate(is_religious = if_else(              # bool for relchar
     relchar %in% c("None", "Does not apply"),
     FALSE,
     TRUE)) %>% 
-  # Now we'll subset the df so that we have two equal groups of 50 schools,
-  # comparing religious against non-religious schools
-  group_by(is_religious) %>% 
+  group_by(is_religious) %>%                  # sample 50 of each
   slice_sample(n = 50) %>% 
   ungroup() %>% 
-  # We can remove the reldenom column and re-order the remaining columns
   select(urn, is_religious, matprog)
 
-head(test_reldenom)
+# Preview the result
+test_relchar %>% 
+  head() %>% 
+  kable(digits = 1,
+        align = "l",
+        caption = "Religious character and maths performance")
 ```
 
 The table shows 100 schools, and the corresponding maths progress score for each. You can then divide them into 2 groups and create a chart with one plot for the group with a religious character and one plot for the group without a religious character, as shown below.
 ```{r perf-math-boxplot}
-ggplot(test_reldenom, aes(is_religious, matprog)) +
-  geom_boxplot()
+# Plot a boxplot of maths performance by religious character
+ggplot(test_relchar, aes(is_religious, matprog)) +
+  geom_boxplot() +
+  labs(x = "Is religious?",
+       y = "Maths progress score",
+       title = "Boxplot of maths progress scores in religious and non-religious schools")
 ```
 
-Looking at this data might tell us that having a religious character has possibly decreased the maths progress score, but we would need to do a formal statistical analysis, which will take into account the different amounts of variability, to work this out for certain.
+Looking at this data might tell us that having a religious character has possibly decreased the maths progress score, but we would need to do a formal **statistical analysis**, which will take into account the different amounts of variability, to work this out for certain.
 
 ### The statistics cycle
-Often we start out with an initial question that we want to answer with data. We collect the data and analyse it to answer that question, but in doing so that uncovers extra questions that we may want to go further and investigate. This process of analysis, refinement and reanalysis is generally how scientific research develops. We call this diagram the statistics cycle as shown below.
+Often we start out with an initial question that we want to answer with data. We collect the data and analyse it to answer that question, but in doing so that uncovers extra questions that we may want to go further and investigate. This process of analysis, refinement and reanalysis is generally how scientific research develops. We call this diagram the **statistics cycle** as shown below.
 
 ![Figure 1: The statistics cycle](images/1-01.png)
 
@@ -167,6 +162,7 @@ Here is how we might start to design our experiment:
 ### Collecting weather data
 Now that we have designed a study, we are ready to collect data. Here are the monthly average maximum temperatures for Edinburgh over the three years from January 2014 to December 2016 (source: [Weather Underground](www.wunderground.com)).
 ```{r ed-weather}
+# Define the variables
 year <- c(rep(2012, 12), rep(2013, 12), rep(2014, 12))
 month <- rep(c("Jan", "Feb", "Mar", "Apr",
                "May", "Jun", "Jul", "Aug",
@@ -175,10 +171,12 @@ temp <- c(7, 8, 10, 12, 15, 18, 21, 18, 17, 14, 10, 7,
           7, 7, 9, 13, 13, 17, 17, 19, 17, 14, 11, 10,
           7, 7, 9, 10, 15, 16, 19, 18, 18, 13, 8, 9)
 
+# Build a dataframe
 edinburgh <- tibble(year, month, temp) %>% 
   mutate(year = as.character(year),
          month = factor(month, levels = month.abb))
 
+# View the data
 kable(edinburgh %>% 
         pivot_wider(names_from = month, values_from = temp))
 ```
