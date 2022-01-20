@@ -9,6 +9,7 @@ output:
     number_sections: true
     toc_float: true
     theme: cosmo
+    code_folding: hide
 ---
 
 ```{r setup, include=FALSE}
@@ -209,8 +210,12 @@ The graph has a horizontal scale showing the years, and a vertical scale showing
 
 Line graphs can be used whenever we want to show how a variable changes over time. The graph below shows a line graph of three data sets showing the monthly average daily maximum temperature of Edinburgh in the years 2012, 2013 and 2014.
 ```{r weather-line}
+# Plot a line graph for Edinburgh weather data
 ggplot(data = edinburgh) +
-  geom_line(mapping = aes(x = month, y = temp, group = year, color = year))
+  geom_line(mapping = aes(x = month,
+                          y = temp,
+                          group = year,
+                          color = year))
 ```
 
 ## Bar charts
@@ -261,7 +266,7 @@ The shape of a histogram or bar chart is often described as the **distribution**
 
 In the middle and right-hand diagrams above, the heights of the bars become smaller and smaller towards the far left and right. We call these regions the **tails**. The tail might be longer on one side than the other. If this is the case, we say that the distribution of the data is **skewed**. A chart with a longer tail to the left **is left-skewed**, while a chart with a longer tail to the right is **right-skewed**.
 
-![Figure 3: Skewed data shapes](images/1.03.png)
+![Figure 3: Skewed data shapes](images/1-03.png)
 
 ## Pie charts
 Playfair's *Statistical Breviary* also introduced the **pie chart** as a way of showing the relative sizes of the African, European and Asiatic regions of the Turkish Empire. Pie charts, like bar charts, allow us to show and compare amounts or values across different categories. They were popularised by Florence Nightingale, a nurse during the Crimean War, who used a form of pie chart to document causes of patient mortality. 
@@ -352,7 +357,7 @@ Another important average is the **median**. The median is found by ordering the
 
 Note that when someone quotes an "average" value for a given data set, they have most likely calculated the mean. However, this need not be the case, and in general the type of average used should always be specified.
 
-### Effect of outliers
+## Effect of outliers
 If you have ever watched an artistic gymnastics competition, you may have wondered how the scores are calculated. Following a change of rules in 2008, a contestant's score is calculated by adding together two scores, one for the difficulty of the contestant's routine, and one for the execution of the routine - how well they performed it. The difficulty score is simply agreed between two judges, but the execution score is calculated from the separate scores of five judges:
 
 1. The scores are put in order from smallest to largest.
@@ -366,3 +371,100 @@ The reason why the smallest and largest scores are ignored in gymnastics scoring
 The idea of calculating the mean after removing outliers is used more generally in statistics, outside of the calculation of gymnastics scores. A **trimmed mean** is a mean that is calculated after discarding, for example, the smallest 10% and the largest 10% of the values in the data set. Discarding the lower and upper 10% values and calculating the mean of the remaining values would be called the 10% trimmed mean. The precise percentage of values discarded varies, but is usually between 5% and 25%. The gymnastics execution score is the 20% trimmed mean of the five gymnastics scores.
 
 You might wonder what would happen if the gymnastics execution score was calculated using the median rather than the mean. The median of all five scores is the same as the median of the three middle values, and so there is no longer any need to remove the smallest and largest scores. The median can be thought of as a trimmed mean where all but the middle value is discarded. In particular, any outliers are certainly discarded, and so do not affect the median. In other words, the median is **resistant** to outliers.
+
+## Skew and averages
+How big is the gap between the earnings of men and women in the United Kingdom? In 2009, it was calculated by the Office for National Statistics (ONS) that female full-time workers were paid on average 12.8% less than male full-time workers. In that same year, it was reported by the Equality and Human Rights Commission (EHRC) that this gap is actually 17.1%. Both organisations used the same dataset, so how have they calculated different figures? The key is in the word 'average'.
+
+The two graphs below show simulated pay data for 1000 males and 1000 females. Take a look at the mean and median in each graph. How do they compare? Can you see why the two figures quoted above could be different?
+
+![Figure 4: Female Pay](images/1-04.svg)
+![Figure 5: Male Pay](images/1-05.svg)
+
+The figures for the difference between the average pay of males and females are different because the type of average used in each case is different. As you can see from the graphs above, the difference in median pay between males and females is much less than the difference between mean pay. The ONS compared median pay, while the EHRC compared mean pay, and so the ONS got a smaller figure for the difference than the EHRC did.
+
+So why are means and medians so different? We have seen that the mean is affected by outliers while the median is not, but the overall distribution of the data has an impact too.
+
+## Are averages enough?
+### House sizes
+Suppose you are in charge of a housing development project. You might look at the size of families in the area to get an idea of how many bedrooms to build in each house. You might find that the mean family size is 3.2, and build a large number of three bedroom houses. But what the average here doesn't tell us is that family size has a **bimodal distribution**, with many households consisting of just one or two people, and many consisting of four or more people. Three-bedroom houses may not sell well.
+
+Averages are useful ways of summarising data, but we must be careful when we come across them. We have seen that we must take into account what type of average is being used, but we should also think about whether or not we need further information that the average does not tell us. 
+
+### The average man and woman
+In October 2010, the [Office for National Statistics](https://www.ons.gov.uk/) released figures describing the [average British man and woman](file:///Users/clare/Downloads/unwsdpressrelease_tcm77-281417.pdf). These figures were the focus of a BBC News article, which can be found [here on the BBC News website](https://www.bbc.co.uk/news/uk-11534042). You might find it interesting to read the article and think about what information is lost when such averages are taken.
+
+In general, what information might be lost when we take an average? What problems can averaging cause for decision- and policy-making? Can you think of any other situations in which taking an average might give a completely wrong impression?
+
+## Variability of data
+When we take an average, we will always lose information about our data - we are summarising the full data set with just a single "typical" value. How much information is lost, and how critical this is, depends on how much the data values vary from the average. Fortunately, there are ways of quantifying the variability of a data set that can be presented in addition to an average, and this provides further information about our data that would otherwise be lost.
+
+<img src="https://cdn-icons-png.flaticon.com/512/0/375.png" alt="play button" align="left" width="20"/> &nbsp; [Download the video](https://edx-video.net/EDNSTATS2016-V001300_DTH.mp4)
+
+There are many ways to measure the variability of a data set.
+
+### The range
+The most straightforward way of measuring the variability of a data set is to use the **range**, which is simply the difference between the smallest and the largest values in a data set.
+
+Looking back at our weather data for Edinburgh, we can see that the average (mean) maximum daily temperature each month in 2014, in °C, was as follows.
+```{r ed-weather-2}
+# View the data
+edinburgh %>% 
+  filter(year == 2014) %>% 
+  pivot_wider(names_from = month, values_from = temp) %>% 
+  select(-year) %>% 
+  kable()
+```
+
+The lowest monthly mean maximum temperature was 7°C, whilst the highest was 19°C. The **range is therefore 12°C**.
+
+### The interquartile range
+Most months of the year it is not as cold at 7°C or as warm as 19°C, and so the range gives a bit of an extreme picture of how the weather varies over the year. We might instead use the **interquartile range** to measure the variability of our data. The interquartile range is the difference between the **lower quartile** and the **upper quartile**. The lower quartile is the value such that one quarter of the data lies below it, and the upper quartile is the value such that one quarter of the data lies above it. Note that half the data lies between the lower quartile and the upper quartile, and so the interquartile range measures the range of the 'middle half' of our data.
+
+To calculate the interquartile range, we begin by putting our data in order, from smallest to largest:
+$$
+7, 7, 9, 10, 11, 13, 13, 14, 17, 17, 17, 19.
+$$
+
+Next we divide the data set into two halves. We have an even number of pieces of data, and so we can do this exactly.
+
+<center>
+$[7, 7, 9, 10, 11, 13]$ and $[13, 14, 17, 17, 17, 19]$
+</center>
+<br>
+If we had an odd number of pieces of data, then we would include the middle value (the median) in both halves. We can now calculate the lower quartile as the median of the first of the two halves of the data set, which in our case is 9.5°C. The upper quartile is the median of the second half of the data, which is 17°C. **The interquartile range, the difference between the upper quartile and the lower quartile, is therefore 7.5°C**.
+
+Note that there are [other methods](https://www.scribbr.com/frequently-asked-questions/two-methods-for-calculating-interquartile-range/) for calculating the lower and upper quartile values that differ slightly from the one described here. All methods are essentially the same for large data sets, and so this is nothing to worry about.
+
+### The variance and standard deviation
+There are two other key measurements of the variability of a data set, namely the **variance** and the **standard deviation**. These work by giving a measure of how far away the different data values are from the mean. The two are closely related, with the standard deviation being the square root of the variance. The variance and standard deviation are the measurements most commonly used by statisticians, and we will introduce them formally later in the course.
+
+Note that, because of similarities in the calculation method, the range and interquartile range are usually used alongside the median. Similarly, the variance or standard deviation is generally used alongside the mean.
+
+### Sensitivity to outliers
+When looking at the calculation of gymnastics scores, we saw that the mean is **sensitive** to outliers while the median is **resistant** to outliers. More generally, we say that any measure such as an average or a range is sensitive to outliers if it is strongly affected by outliers, and resistant to outliers if it is not sensitive to outliers. We have seen in the question above that the range is sensitive to outliers, while the interquartile range is resistant to outliers.
+
+## Visualising variability
+In the previous section, we looked at ways of presenting data graphically. There is one further visual representation of data that we will introduce this week, and this is the **box plot**. The box plot is different from many other visual representations of data because rather than displaying the entire data set, it shows only certain summary statistics: the minimum, lower quartile, median, upper quartile and maximum values. The box plot below shows the summary statistics that we calculated previously for the temperature of Edinburgh in 2015.
+
+<img src="images/1-06.svg" alt="Image 6: Boxplot of Edinburgh temperatures" width="400" />
+
+The horizontal scale along the bottom gives the temperature in °C. Above the scale is a rectangular box with the left-hand side aligned at the lower quartile value, 9.5, and the right-hand side aligned at the upper quartile value, 17. The box is subdivided by a vertical line aligned at the median, which is 13. The width of the rectangle is the interquartile range. Two further vertical lines are aligned at the minimum and maximum values, which are 7 and 19 respectively, joined to the rectangle by horizontal lines. The distance between these two outer vertical lines is the range.
+
+### Box plots and bar charts
+Box plots provide a neat way of summarising a data set visually, but since they are based on summary statistics rather than the entire data set, information about the distribution of the data set and its exact values is naturally lost. That said, there are benefits to using a box plot over another chart, such as the ability to easily see the summary statistics. Furthermore, it is possible to use a box plot to get an idea of what the distribution of the data set might be. For example, we can determine the smallest and largest values of the data set, and we know the proportions of the data set that lie between the various vertical lines on the box plot.
+
+## Summarising data in practice
+Earlier in the course we designed a simple study to investigate weather patterns, collecting temperature data from our local area and presenting it in the form of a line graph. Now we will see if we can make better sense of our data by looking at the summary statistics.
+
+The data we collected was the mean daily maximum temperature in each month from 2014 to 2016. There are two ways we can make use of summary statistics here. Firstly, we can take the summary statistics of the three values for a given month, and secondly we can take the summary statistics of all the values for a given year.
+
+We are aiming use our data to see how the temperature of our nearest city has varied over the past three years. The summary statistics of all the temperatures from a given year will be most useful to help answer the question.
+
+## The limitations of summary statistics
+Summary statistics allow us to describe large and complex data sets in just a few key numbers. This is very convenient if we want to quickly compare data sets, or describe our data in a simple way, but we must always keep in mind that these figures may not tell us everything that our data has to say.
+
+Take a look at the graphs below. They are examples of **scatter plots**, which are graphs allowing us to visualise data with two variables, one represented by the horizontal axis and one represented by the vertical axis. We will introduce scatter plots more formally next week in the course, but for now, take a look at the general location and spread of the points in the graphs. What do you think a "typical" (or average) point in each of the graphs might be? What about a measure of the spread of the data?
+
+![Image 7: Anscombe's Quartet](images/1-07.svg)
+
+The graphs shown above are known as **Anscombe's Quartet**, named after the statistician Francis Anscombe (1918-2001). They are interesting because despite the fact that the four graphs look very different, many of their summary statistics are very similar or identical. For example, the mean of the horizontal values of each point are identical for each graph, and the mean of the vertical values of each point are equal to two decimal places. Similarly the variance of the horizontal values of each point are identical for each graph, and the variance of the vertical values are within 0.003 of each other. This emphasises the point that summary statistics do not capture all the information we might want to, or should, know about a data set, and hence that it's important to visualise data as well as look at the summary statistics. Next week, we will look at how visualising data allows us to see patterns in the data that we would not spot from looking at summary statistics alone.
